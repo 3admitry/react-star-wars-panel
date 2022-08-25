@@ -1,0 +1,17 @@
+import {CharactersListActionsType, charactersListReducer} from "../features/characters/characters-list-reducer";
+import {applyMiddleware, combineReducers, legacy_createStore as createStore} from 'redux';
+import thunk, {ThunkAction, ThunkDispatch} from 'redux-thunk';
+
+const rootReducer = combineReducers({
+    charactersList: charactersListReducer,
+})
+
+export const store = createStore(rootReducer, applyMiddleware(thunk));
+
+export type AppActionsType = CharactersListActionsType
+export type AppRootStateType = ReturnType<typeof rootReducer>
+export type AppDispatch = ThunkDispatch<AppRootStateType, unknown, AppActionsType>
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppRootStateType, unknown, AppActionsType>
+
+// @ts-ignore
+window.store = store;
