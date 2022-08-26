@@ -1,66 +1,82 @@
-import {Box, Grid, Paper} from '@mui/material';
-import React, {useEffect} from 'react';
-import {useParams} from 'react-router-dom';
-import {People} from 'swapi-ts';
+import {Box, Button, FormGroup, Grid, Paper, TextField} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {Link, useParams} from 'react-router-dom';
 import {IPeople} from 'swapi-ts/src/SWApi';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
-import {fetchCharacterTC} from './character-reducer';
+import {fetchCharacterTC, setCharacter} from './character-reducer';
+import {useFormik} from 'formik';
 
 const CharacterInfo = () => {
     const params = useParams();
-    const characterUrl = `https://swapi.dev/api/people/${params.userId}/`;
     const dispatch = useAppDispatch();
     const character: IPeople = useAppSelector(state => state.character)
+    const [editMode, setEditMode] = useState<boolean>(false)
 
     useEffect(() => {
         const thunk = fetchCharacterTC(params.userId)
         dispatch(thunk)
     }, [])
 
-
     return <>
         <Box sx={{width: '100%', padding: 2}}>
-            <Paper sx={{padding: '2rem 3rem'}}>
-                <h3>{character.name}</h3>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Birth year:</Grid><Grid item xs={2}>{character.birth_year}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Eye color:</Grid><Grid item xs={2}>{character.eye_color}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Films:</Grid><Grid item xs={2}>{character.films.map((e,i) => <div key={i}>{''+e}</div>)}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Gender:</Grid><Grid item xs={2}>{character.gender}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Hair color:</Grid><Grid item xs={2}>{character.hair_color}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Height:</Grid><Grid item xs={2}>{character.height}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Homeworld:</Grid><Grid item xs={2}>{''+character.homeworld}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Mass:</Grid><Grid item xs={2}>{character.mass}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Skin color:</Grid><Grid item xs={2}>{character.skin_color}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Species:</Grid><Grid item xs={2}>{character.species.map((e,i) => <div key={i}>{''+e}</div>)}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Starships:</Grid><Grid item xs={2}>{character.starships.map((e,i) => <div key={i}>{''+e}</div>)}</Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>Vehicles:</Grid><Grid item xs={2}>{character.vehicles.map((e,i) => <div key={i}>{''+e}</div>)}</Grid>
-                </Grid>
+            <Button component={Link} to={`/`} variant="outlined">Back to Home</Button>
+            <Paper sx={{padding: '2rem 3rem', marginTop: 2}}>
+                {!editMode &&
+                    <>
+                        <Button sx={{float: 'right'}} onClick={() => setEditMode(true)} variant="outlined">Edit</Button>
+                        <CharacterData character={character}/>
+                    </>
+                }
+                {editMode && <CharacterDataForm character={character} setEditMode={setEditMode}/>}
             </Paper>
         </Box>
     </>;
 };
 
 export default CharacterInfo;
+
+const CharacterData = ({character}: any) => {
+    let characterData = Object.keys(character).map((el, i) => {
+        if (el === 'name' || el === 'url' || el === 'created' || el === 'edited') return false
+        return <Grid container spacing={2} key={i}>
+            <Grid item xs={2}>{el}</Grid><Grid item xs={2}>{character[el]}</Grid>
+        </Grid>
+    })
+
+    return (
+        <>
+            <h3>{character.name}</h3>
+            {characterData}
+        </>
+    );
+};
+
+const CharacterDataForm = ({character, setEditMode}: any) => {
+    const dispatch = useAppDispatch();
+    const formik = useFormik({
+        initialValues: character,
+
+        onSubmit: values => {
+            dispatch(setCharacter(values))
+            console.log(values)
+            setEditMode(false)
+        },
+    });
+    let characterData = Object.keys(character).map((el, i) => {
+        if (el === 'url' || el === 'created' || el === 'edited') return false
+        return <Grid key={i}>
+            <Grid item sx={{margin: '.5rem 0'}}>
+                <TextField fullWidth label={el} {...formik.getFieldProps(el)}
+                />
+            </Grid>
+        </Grid>
+    })
+    return <form onSubmit={formik.handleSubmit}>
+        <FormGroup>
+            {characterData}
+            <Button type={'submit'} variant={'contained'} color={'primary'}>
+                Save
+            </Button>
+        </FormGroup>
+    </form>
+}

@@ -1,7 +1,4 @@
-import { CharacterActionsType } from "../features/characters/character/character-reducer";
-import { AppThunk } from "./store";
-import {Films, People, Species } from 'swapi-ts';
-
+import {CharacterActionsType} from "../features/characters/character/character-reducer";
 
 export const  getData = async (obj: any, data: Array<any>, actioCreator: (value: any) => CharacterActionsType, dispatch: any, title: any) => {
     if(data.length>0){

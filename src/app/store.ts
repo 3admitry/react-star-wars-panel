@@ -1,7 +1,7 @@
 import {CharactersListActionsType, charactersListReducer} from "../features/characters/characters-list-reducer";
 import {applyMiddleware, combineReducers, legacy_createStore as createStore} from 'redux';
 import thunk, {ThunkAction, ThunkDispatch} from 'redux-thunk';
-import { CharacterActionsType, characterReducer } from "../features/characters/character/character-reducer";
+import {CharacterActionsType, characterReducer} from "../features/characters/character/character-reducer";
 
 const rootReducer = combineReducers({
     charactersList: charactersListReducer,

@@ -1,8 +1,7 @@
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
-
+import {styled} from '@mui/material';
 
 type propstype = {
     count: number
@@ -10,14 +9,17 @@ type propstype = {
     handlePagination: (event: React.ChangeEvent<unknown>, value: number) => void
 }
 
+export default function PaginationCharacters({count, pageNumber, handlePagination}: propstype) {
 
-export default function PaginationCharacters({count, pageNumber,handlePagination}:propstype) {
-    const [page, setPage] = React.useState(1);
-
+    const CustomizedPagination = styled(Pagination)`
+      & .MuiPagination-ul {
+        justify-content: center;
+      }
+    `;
 
     return (
-        <Stack spacing={2}>
-            <Pagination count={Math.ceil(count)} page={pageNumber} onChange={handlePagination} />
+        <Stack spacing={2} sx={{margin: 2,}}>
+            <CustomizedPagination count={Math.ceil(count)} page={pageNumber} onChange={handlePagination}/>
         </Stack>
     );
 }
