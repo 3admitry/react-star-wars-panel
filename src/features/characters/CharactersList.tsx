@@ -1,10 +1,10 @@
-import {Box, Paper, styled} from '@mui/material';
+import {Box, Paper, styled, TextField} from '@mui/material';
 import Stack from '@mui/material/Stack';
-import React, {useEffect} from 'react';
-import {fetchCharactersListTC} from "./characters-list-reducer";
-import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {People} from 'swapi-ts';
-import PaginationCharacters from "../../components/Pagination";
+import React, {useEffect,useState} from 'react';
+import {fetchCharactersListTC} from './characters-list-reducer';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import PaginationCharacters from '../../components/Pagination';
+import { CharacterItem } from './CharacterItem';
 
 const CharactersList = () => {
 
@@ -12,16 +12,19 @@ const CharactersList = () => {
     const characters = useAppSelector(state => state.charactersList.results)
     const pageNumber = useAppSelector(state => state.charactersList.pageNumber)
     const count = useAppSelector(state => state.charactersList.count)
+    const[search, setSearch] = useState<string|undefined>()
+
+    const searchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(event.target.value);
+    };
 
     useEffect(() => {
-        People.find(people => people.name === 'Biggs Darklighter').then(res=> console.log(res))
-
-        const thunk = fetchCharactersListTC(pageNumber)
+        const thunk = fetchCharactersListTC(pageNumber, search ? search:'undefined')
         dispatch(thunk)
-    }, [])
+    }, [search])
 
     const handlePagination = (event: React.ChangeEvent<unknown>, value: number) => {
-        const thunk = fetchCharactersListTC(value)
+        const thunk = fetchCharactersListTC(value, search)
         dispatch(thunk)
     };
 
@@ -35,12 +38,13 @@ const CharactersList = () => {
 
     return (
         <>
+            <TextField onChange={searchHandler} id="outlined-basic" label="Type name of character" variant="outlined"/>
             <Box sx={{width: '100%'}}>
                 <Stack spacing={2}>
                     {
                         characters.map(char => {
                             return <Item key={char.name}>
-                                <CharacterItem character={char}/>
+                                <CharacterItem id={+char.url.split('/')[5]} character={char}/>
                             </Item>
                         })
                     }
@@ -52,11 +56,3 @@ const CharactersList = () => {
 };
 
 export default CharactersList;
-
-const CharacterItem = ({character}: any) => {
-    return (
-        <div>
-            {character.name}
-        </div>
-    );
-};

@@ -50,10 +50,14 @@ export const setCharactersList = (charactersList: CharactersList) => ({type: cha
 export const setPageNumber = (pageNumber: number) => ({type: characterActions.setPageNumber, pageNumber} as const)
 
 //ThunkCreators
-export const fetchCharactersListTC = (pageNumber:number): AppThunk => async dispatch => {
+export const fetchCharactersListTC = (pageNumber:number, search?: string): AppThunk => async dispatch => {
     //dispatch(setAppStatusAC('loading'))
     try {
-        const response = await People.getPage(pageNumber)
+        if(search!='undefined'){
+            var response = await People.getPage(pageNumber, search)
+        }else{
+            var response = await People.getPage(pageNumber)
+        }
 
         dispatch(setCharactersList(response))
         if(pageNumber){

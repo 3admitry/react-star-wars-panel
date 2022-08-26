@@ -17,7 +17,6 @@ export default function PaginationCharacters({count, pageNumber,handlePagination
 
     return (
         <Stack spacing={2}>
-            <Typography>Page: {page}</Typography>
             <Pagination count={Math.ceil(count)} page={pageNumber} onChange={handlePagination} />
         </Stack>
     );
