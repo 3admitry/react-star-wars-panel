@@ -1,7 +1,7 @@
 import {Box, Paper, styled, TextField} from '@mui/material';
 import Stack from '@mui/material/Stack';
 import React, {useEffect, useState} from 'react';
-import {fetchCharactersListTC} from './characters-list-reducer';
+import {fetchCharactersListTC, setPageNumber} from './characters-list-reducer';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import PaginationCharacters from '../../components/Pagination';
 import {CharacterItem} from './CharacterItem';
@@ -16,10 +16,11 @@ const CharactersList = () => {
 
     const searchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
+        dispatch(setPageNumber(1))
     };
 
     useEffect(() => {
-        const thunk = fetchCharactersListTC(pageNumber, search ? search : 'undefined')
+        const thunk = fetchCharactersListTC(pageNumber, search ? search : undefined)
         dispatch(thunk)
     }, [search])
 
@@ -49,7 +50,6 @@ const CharactersList = () => {
                         </Item>
                     })
                 }
-
             </Stack>
         </Box>
         {characters.length > 0 &&

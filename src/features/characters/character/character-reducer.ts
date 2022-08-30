@@ -1,4 +1,4 @@
-import {IPeople,IFilm} from "swapi-ts/src/SWApi";
+import {IPeople} from "swapi-ts/src/SWApi";
 import {Films, People, Planets, Species, Starships, Vehicles } from 'swapi-ts';
 import { AppThunk } from "../../../app/store";
 import { getData } from "../../../app/utils.js";
@@ -98,10 +98,10 @@ export const fetchCharacterTC = (id:string | undefined): AppThunk => async dispa
                 dispatch(setFilms(films))
             }
         }*/
-        getData(Films, response.resources[0].value.films, setFilms, dispatch, 'title')
-        getData(Species, response.resources[0].value.species, setSpecies, dispatch, 'name')
-        getData(Starships, response.resources[0].value.starships, setStarships, dispatch, 'name')
-        getData(Vehicles, response.resources[0].value.vehicles, setVehicles, dispatch, 'name')
+        await getData(Films, response.resources[0].value.films, setFilms, dispatch, 'title')
+        await getData(Species, response.resources[0].value.species, setSpecies, dispatch, 'name')
+        await getData(Starships, response.resources[0].value.starships, setStarships, dispatch, 'name')
+        await getData(Vehicles, response.resources[0].value.vehicles, setVehicles, dispatch, 'name')
         const homeworldResponse = await Planets.find(el => el.url === response.resources[0].value.homeworld)
         dispatch(setHomeworld(homeworldResponse.resources[0].value.name))
         //dispatch(setAppStatusAC('succeeded'))

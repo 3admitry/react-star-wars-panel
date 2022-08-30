@@ -1,11 +1,11 @@
 import {IPeople} from "swapi-ts/src/SWApi";
-import { People } from 'swapi-ts';
+import {People} from 'swapi-ts';
 import {AppThunk} from "../../app/store";
 
 type CharactersList = {
     count: number
     next: string | null
-    previous: null | null
+    previous: string | null
     results: Array<IPeople>
     pageNumber: number
 }
@@ -46,29 +46,25 @@ export const charactersListReducer = (state: CharactersList = initialState, acti
 }
 
 //ActionCreators
-export const setCharactersList = (charactersList: CharactersList) => ({type: characterActions.setCharacters, charactersList} as const)
+export const setCharactersList = (charactersList: CharactersList) => ({
+    type: characterActions.setCharacters,
+    charactersList
+} as const)
 export const setPageNumber = (pageNumber: number) => ({type: characterActions.setPageNumber, pageNumber} as const)
 
 //ThunkCreators
-export const fetchCharactersListTC = (pageNumber:number, search?: string): AppThunk => async dispatch => {
-    //dispatch(setAppStatusAC('loading'))
+export const fetchCharactersListTC = (pageNumber: number, search?: string): AppThunk => async dispatch => {
+    let response;
     try {
-        if(search!='undefined'){
-            var response = await People.getPage(pageNumber, search)
-        }else{
-            var response = await People.getPage(pageNumber)
+        if (search === undefined) {
+            response = await People.getPage(pageNumber)
+        } else {
+            response = await People.getPage(pageNumber, search)
         }
-
         dispatch(setCharactersList(response))
-        if(pageNumber){
-            dispatch(setPageNumber(pageNumber))
-        }
-
-
-        //dispatch(setAppStatusAC('succeeded'))
+        dispatch(setPageNumber(pageNumber))
     } catch (error: any) {
         console.log('fetchCharactersListTC', error)
-        //errorNetworkHandler(error, dispatch)
     }
 }
 
